@@ -542,7 +542,7 @@
             <h1>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム</h1>
             <div class="audio-controls">
                 <button id="musicToggle">🎵 BGM: 迷宮の光</button>
-                <audio id="bgMusic" loop>
+                <audio id="bgMusic" loop autoplay>
                     <source src="迷宮の光.mp3" type="audio/mpeg">
                 </audio>
             </div>
@@ -752,6 +752,26 @@
         const bgMusic = document.getElementById('bgMusic');
         let isPlaying = false;
 
+        // 自動再生関数
+        function autoPlayMusic() {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                musicToggle.textContent = '⏸️ BGM: 迷宮の光';
+            }).catch(e => {
+                console.log('自動再生が制限されています。ユーザーの操作後に再生されます。');
+                // ユーザーの最初のクリックで再生を試みる
+                document.addEventListener('click', function playOnFirstClick() {
+                    bgMusic.play().then(() => {
+                        isPlaying = true;
+                        musicToggle.textContent = '⏸️ BGM: 迷宮の光';
+                        document.removeEventListener('click', playOnFirstClick);
+                    }).catch(err => {
+                        console.log('音楽の再生に失敗しました:', err);
+                    });
+                }, { once: true });
+            });
+        }
+
         musicToggle.addEventListener('click', function() {
             if (isPlaying) {
                 bgMusic.pause();
@@ -772,6 +792,9 @@
             if (hash && document.getElementById(hash)) {
                 document.querySelector(`.nav-item[data-section="${hash}"]`).click();
             }
+            
+            // BGMの自動再生を試みる
+            autoPlayMusic();
         });
 
         // ハッシュ変更の監視
