@@ -532,17 +532,215 @@
             font-size: 30px;
             text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
         }
+
+        /* 音楽プレイヤーのオーバーレイ */
+        .music-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(10px);
+        }
+
+        .music-modal {
+            background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+            border: 3px solid #ff0000;
+            border-radius: 20px;
+            padding: 60px 80px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: 
+                0 0 100px rgba(255, 0, 0, 0.8),
+                inset 0 0 50px rgba(255, 0, 0, 0.2);
+            animation: modalPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes modalPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .music-modal h2 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            text-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+            letter-spacing: 4px;
+        }
+
+        .new-release-badge {
+            display: inline-block;
+            background: #ff0000;
+            color: #ffffff;
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 18px;
+        }
+
+        .music-modal p {
+            color: #e0e0e0;
+            font-size: 18px;
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            color: #ffffff;
+            border: none;
+            padding: 20px 60px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            box-shadow: 
+                0 10px 30px rgba(255, 0, 0, 0.5),
+                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+        }
+
+        .play-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(255, 0, 0, 0.7),
+                inset 0 2px 5px rgba(255, 255, 255, 0.4);
+        }
+
+        .play-button:active {
+            transform: translateY(-1px) scale(1.02);
+        }
+
+        .skip-link {
+            display: block;
+            margin-top: 30px;
+            color: #666;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+
+        .skip-link:hover {
+            color: #999;
+        }
+
+        /* 音楽再生中のインジケーター */
+        .music-indicator {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #ff0000;
+            border-radius: 50px;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            z-index: 1100;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .music-indicator.hidden {
+            display: none;
+        }
+
+        .visualizer {
+            display: flex;
+            gap: 3px;
+            align-items: flex-end;
+            height: 20px;
+        }
+
+        .bar {
+            width: 4px;
+            background: #ff0000;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
+        .bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
+        .bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
+        .bar:nth-child(4) { height: 18px; animation-delay: 0.3s; }
+        .bar:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1); }
+        }
+
+        .music-indicator span {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
     </style>
 </head>
 <body>
     <div class="film-grain"></div>
+    
+    <!-- 音楽再生プロンプトのオーバーレイ -->
+    <div id="musicOverlay" class="music-overlay">
+        <div class="music-modal">
+            <h2>主題歌「迷宮の光」</h2>
+            <div class="new-release-badge">NEW RELEASE</div>
+            <p>
+                劇場公開版の世界観を彩る主題歌<br>
+                「迷宮の光」をぜひお聴きください<br>
+                <br>
+                🎵 最高の臨場感でお楽しみいただくために<br>
+                音楽の再生をおすすめします
+            </p>
+            <button class="play-button" onclick="startMusic()">
+                ▶ 音楽を再生して始める
+            </button>
+            <a href="#" class="skip-link" onclick="skipMusic()">音楽なしで続ける</a>
+        </div>
+    </div>
+
+    <!-- 音楽再生中のインジケーター -->
+    <div id="musicIndicator" class="music-indicator hidden">
+        <div class="visualizer">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <span>♪ 迷宮の光</span>
+    </div>
     
     <header>
         <div class="header-content">
             <h1>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム</h1>
             <div class="audio-controls">
                 <button id="musicToggle">🎵 BGM: 迷宮の光</button>
-                <audio id="bgMusic" loop autoplay>
+                <audio id="bgMusic" loop>
                     <source src="迷宮の光.mp3" type="audio/mpeg">
                 </audio>
             </div>
@@ -715,6 +913,29 @@
 
     <script src="story_loader.js"></script>
     <script>
+        // 音楽再生の制御
+        function startMusic() {
+            const bgMusic = document.getElementById('bgMusic');
+            const overlay = document.getElementById('musicOverlay');
+            const indicator = document.getElementById('musicIndicator');
+            const musicToggle = document.getElementById('musicToggle');
+            
+            bgMusic.play().then(() => {
+                overlay.style.display = 'none';
+                indicator.classList.remove('hidden');
+                musicToggle.textContent = '⏸️ BGM: 迷宮の光';
+                isPlaying = true;
+            }).catch(e => {
+                console.log('音楽の再生に失敗しました:', e);
+                overlay.style.display = 'none';
+            });
+        }
+
+        function skipMusic() {
+            const overlay = document.getElementById('musicOverlay');
+            overlay.style.display = 'none';
+        }
+
         // ナビゲーション制御
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', function(e) {
@@ -752,35 +973,21 @@
         const bgMusic = document.getElementById('bgMusic');
         let isPlaying = false;
 
-        // 自動再生関数
-        function autoPlayMusic() {
-            bgMusic.play().then(() => {
-                isPlaying = true;
-                musicToggle.textContent = '⏸️ BGM: 迷宮の光';
-            }).catch(e => {
-                console.log('自動再生が制限されています。ユーザーの操作後に再生されます。');
-                // ユーザーの最初のクリックで再生を試みる
-                document.addEventListener('click', function playOnFirstClick() {
-                    bgMusic.play().then(() => {
-                        isPlaying = true;
-                        musicToggle.textContent = '⏸️ BGM: 迷宮の光';
-                        document.removeEventListener('click', playOnFirstClick);
-                    }).catch(err => {
-                        console.log('音楽の再生に失敗しました:', err);
-                    });
-                }, { once: true });
-            });
-        }
+        // 自動再生関数（削除 - オーバーレイで対応）
 
         musicToggle.addEventListener('click', function() {
+            const indicator = document.getElementById('musicIndicator');
             if (isPlaying) {
                 bgMusic.pause();
                 musicToggle.textContent = '🎵 BGM: 迷宮の光';
+                indicator.classList.add('hidden');
             } else {
-                bgMusic.play().catch(e => {
+                bgMusic.play().then(() => {
+                    musicToggle.textContent = '⏸️ BGM: 迷宮の光';
+                    indicator.classList.remove('hidden');
+                }).catch(e => {
                     console.log('音楽の再生に失敗しました:', e);
                 });
-                musicToggle.textContent = '⏸️ BGM: 迷宮の光';
             }
             isPlaying = !isPlaying;
         });
@@ -792,9 +999,6 @@
             if (hash && document.getElementById(hash)) {
                 document.querySelector(`.nav-item[data-section="${hash}"]`).click();
             }
-            
-            // BGMの自動再生を試みる
-            autoPlayMusic();
         });
 
         // ハッシュ変更の監視
