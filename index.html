@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム - 劇場公開版</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000000;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 映画館のカーテン効果 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                rgba(0,0,0,1) 0%, 
+                rgba(0,0,0,0) 10%, 
+                rgba(0,0,0,0) 90%, 
+                rgba(0,0,0,1) 100%
+            );
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* フィルムグレイン効果 */
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -10%); }
+            20% { transform: translate(-15%, 5%); }
+            30% { transform: translate(7%, -25%); }
+            40% { transform: translate(-5%, 25%); }
+            50% { transform: translate(-15%, 10%); }
+            60% { transform: translate(15%, 0%); }
+            70% { transform: translate(0%, 15%); }
+            80% { transform: translate(3%, 35%); }
+            90% { transform: translate(-10%, 10%); }
+        }
+
+        .film-grain {
+            position: fixed;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.02"/></svg>');
+            pointer-events: none;
+            animation: grain 8s steps(10) infinite;
+            z-index: 1;
+        }
+
+        /* ヘッダー - 映画タイトル風 */
+        header {
+            background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 100%);
+            backdrop-filter: blur(10px);
+            padding: 30px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #ff0000;
+            box-shadow: 0 4px 30px rgba(255, 0, 0, 0.5);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 2.5rem;
+            color: #ffffff;
+            text-shadow: 
+                0 0 10px rgba(255, 0, 0, 0.8),
+                0 0 20px rgba(255, 0, 0, 0.6),
+                0 0 30px rgba(255, 0, 0, 0.4),
+                0 0 40px rgba(255, 0, 0, 0.2);
+            letter-spacing: 3px;
+            position: relative;
+        }
+
+        h1::after {
+            content: '劇場公開版';
+            position: absolute;
+            top: -15px;
+            right: -80px;
+            font-size: 0.8rem;
+            background: #ff0000;
+            padding: 2px 10px;
+            border-radius: 3px;
+            font-family: 'Noto Sans JP';
+            letter-spacing: 1px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+
+        /* フィクション注意書き - 映画の警告風 */
+        .fiction-notice {
+            background: #000000;
+            color: #ff0000;
+            padding: 20px;
+            margin-top: 120px;
+            text-align: center;
+            font-weight: bold;
+            border: 2px solid #ff0000;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 14px;
+        }
+
+        .fiction-notice::before {
+            content: '⚠ WARNING ⚠';
+            position: absolute;
+            top: 5px;
+            left: 20px;
+            font-size: 12px;
+            color: #ff0000;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* メインコンテナ */
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 30px auto;
+            gap: 40px;
+            padding: 0 20px;
+            min-height: calc(100vh - 250px);
+        }
+
+        /* サイドバー（目次） - 映画のチャプター選択風 */
+        .sidebar {
+            width: 320px;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 30px 20px;
+            position: sticky;
+            top: 130px;
+            height: fit-content;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+            border: 2px solid #ff0000;
+            box-shadow: 
+                0 0 30px rgba(255, 0, 0, 0.3),
+                inset 0 0 20px rgba(255, 0, 0, 0.1);
+        }
+
+        .sidebar h2 {
+            color: #ffffff;
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #ff0000;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 20px;
+            margin: 8px 0;
+            color: #cccccc;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.4) 50%, transparent 100%);
+            transition: left 0.5s ease;
+        }
+
+        .nav-item:hover {
+            border-color: #ff0000;
+            color: #ffffff;
+            transform: translateX(5px);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .nav-item:hover::before {
+            left: 100%;
+        }
+
+        .nav-item.active {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ffffff;
+            font-weight: bold;
+            border-color: #ff0000;
+            box-shadow: 
+                0 0 20px rgba(255, 0, 0, 0.5),
+                inset 0 0 10px rgba(255, 0, 0, 0.2);
+        }
+
+        .nav-item.chapter {
+            padding-left: 40px;
+            font-size: 0.95rem;
+            position: relative;
+        }
+
+        .nav-item.chapter::after {
+            content: 'CHAPTER';
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 9px;
+            color: #666;
+            letter-spacing: 1px;
+        }
+
+        /* メインコンテンツ - 映画スクリーン風 */
+        .main-content {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(15, 15, 15, 0.98) 0%, rgba(5, 5, 5, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 50px;
+            border: 2px solid #333;
+            box-shadow: 
+                0 0 50px rgba(0, 0, 0, 0.8),
+                inset 0 0 30px rgba(0, 0, 0, 0.5);
+            line-height: 1.9;
+            font-size: 17px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* スクリーンの光沢効果 */
+        .main-content::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+                transparent 30%, 
+                rgba(255, 255, 255, 0.02) 50%, 
+                transparent 70%
+            );
+            transform: rotate(45deg);
+            pointer-events: none;
+        }
+
+        .content-section {
+            display: none;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .content-section h2 {
+            color: #ffffff;
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            border-bottom: 3px solid #ff0000;
+            padding-bottom: 20px;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            position: relative;
+        }
+
+        .content-section h2::before {
+            content: '▸';
+            color: #ff0000;
+            margin-right: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        .content-section h3 {
+            color: #ff6666;
+            margin: 35px 0 20px;
+            font-size: 1.8rem;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+        }
+
+        /* 本編リンクのスタイル改善 */
+        .content-section a {
+            color: #ff6666;
+            text-decoration: none;
+            position: relative;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+            padding: 2px 5px;
+        }
+
+        .content-section a:hover {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(255, 102, 102, 0.8);
+            transform: translateX(3px);
+        }
+
+        .content-section a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #ff0000;
+            transition: width 0.3s ease;
+        }
+
+        .content-section a:hover::after {
+            width: 100%;
+        }
+
+        /* 章リストのスタイル */
+        .content-section ol {
+            margin: 20px 0;
+            padding-left: 30px;
+        }
+
+        .content-section ol li {
+            margin: 15px 0;
+            font-size: 18px;
+            list-style: none;
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .content-section ol li::before {
+            content: counter(item);
+            counter-increment: item;
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #ff0000;
+            color: #ffffff;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .content-section ol {
+            counter-reset: item;
+        }
+
+        .cover-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 30px 0;
+            box-shadow: 
+                0 20px 60px rgba(0, 0, 0, 0.8),
+                0 0 100px rgba(255, 0, 0, 0.2);
+            border: 3px solid #333;
+        }
+
+        /* スクロールバー - 映画館風 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #111;
+            border: 1px solid #333;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff0000;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff3333;
+        }
+
+        /* 著者情報 - 映画のクレジット風 */
+        .author-info {
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
+            border-left: 5px solid #ff0000;
+            padding: 30px;
+            margin: 40px 0;
+            border-radius: 0 10px 10px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .author-info::before {
+            content: 'PRODUCTION NOTE';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 12px;
+            color: #ff0000;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 20px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h1::after {
+                display: none;
+            }
+        }
+
+        /* 音楽プレイヤーボタン - 映画館風 */
+        #musicToggle {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid #ff0000;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        #musicToggle:hover {
+            background: rgba(255, 0, 0, 0.4);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        /* プレースホルダーテキストスタイル */
+        .placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        /* 章のコンテンツスタイル */
+        .chapter-content {
+            white-space: pre-wrap;
+            font-family: 'Noto Serif JP', serif;
+            font-size: 17px;
+            line-height: 2.1;
+            color: #e8e8e8;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .chapter-divider {
+            text-align: center;
+            margin: 50px 0;
+            color: #ff0000;
+            font-size: 30px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="film-grain"></div>
+    
+    <header>
+        <div class="header-content">
+            <h1>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム</h1>
+            <div class="audio-controls">
+                <button id="musicToggle">🎵 BGM: 迷宮の光</button>
+                <audio id="bgMusic" loop>
+                    <source src="迷宮の光.mp3" type="audio/mpeg">
+                </audio>
+            </div>
+        </div>
+    </header>
+
+    <div class="fiction-notice">
+        ⚠️ この作品は完全なフィクションです。LINEヤフー様での講演時にサンプルとして制作したもので、実在の人物・団体・出来事とは一切関係ありません。
+        続編のご要望を多数いただいたため、完全版として公開いたしました。
+    </div>
+
+    <div class="main-container">
+        <nav class="sidebar">
+            <h2>目次</h2>
+            <a class="nav-item active" data-section="home">ホーム</a>
+            <a class="nav-item" data-section="about">作品について</a>
+            <a class="nav-item" data-section="characters">登場人物</a>
+            <a class="nav-item" data-section="story">本編</a>
+            <a class="nav-item chapter" data-section="chapter1">第一章：消えた教育者たち</a>
+            <a class="nav-item chapter" data-section="chapter2">第二章：デジタル痕跡の発見</a>
+            <a class="nav-item chapter" data-section="chapter3">第三章：GIGA-OSの真実</a>
+            <a class="nav-item chapter" data-section="chapter4">第四章：デジタル迷宮への挑戦</a>
+            <a class="nav-item chapter" data-section="chapter5">第五章：アルゴリズムとの最終対決</a>
+            <a class="nav-item chapter" data-section="epilogue">エピローグ</a>
+            <a class="nav-item" data-section="settings">設定資料</a>
+            <a class="nav-item" data-section="afterword">あとがき</a>
+        </nav>
+
+        <main class="main-content">
+            <!-- ホーム -->
+            <div class="content-section active" id="home">
+                <h2>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム</h2>
+                <img src="lineyahoo.png" alt="表紙" class="cover-image">
+                <p>教育とテクノロジーの融合が生み出した、予期せぬ恐怖。</p>
+                <p>最先端のAIシステムが管理するLINEヤフー本社ビルで、次々と失踪する教育関係者たち。元開発者の青山智子は、親友からのSOSをきっかけに、巨大企業の闇に立ち向かう。</p>
+                
+                <div class="author-info">
+                    <p><strong>制作経緯：</strong></p>
+                    <p>本作品は、2023年にLINEヤフー様で行った「教育とAIの未来」に関する講演の際に、テクノロジーの危険性を示すサンプルストーリーとして制作したものです。講演後、多くの方から「続きが読みたい」とのご要望をいただき、この度完全版として公開する運びとなりました。</p>
+                    <p>なお、本作品は完全なフィクションであり、実在の企業・人物・技術とは一切関係ございません。</p>
+                </div>
+            </div>
+
+            <!-- 作品について -->
+            <div class="content-section" id="about">
+                <h2>作品について</h2>
+                <h3>あらすじ</h3>
+                <p>最新のスマートビルディング技術が導入されたLINEヤフー本社ビル。このビルは、AIによる完全自動化システム「GIGA-OS」によって管理されており、従業員の行動パターン、生体データ、デジタルフットプリントを24時間収集・分析しています。</p>
+                <p>しかし、このシステムには隠された機能がありました。それは、特定の条件下で人間の空間認識と判断力を操作し、建物内で「迷子」にさせる能力です。</p>
+                
+                <h3>テーマ</h3>
+                <ul>
+                    <li>教育とテクノロジーの倫理</li>
+                    <li>人間性vs効率性</li>
+                    <li>データプライバシー</li>
+                    <li>友情と信頼</li>
+                </ul>
+
+                <h3>メッセージ</h3>
+                <p>「テクノロジーは道具であり、それを使う人間の倫理観と責任感が最も重要である」という、現代社会への警鐘と希望を込めた作品です。</p>
+            </div>
+
+            <!-- 登場人物 -->
+            <div class="content-section" id="characters">
+                <h2>主要登場人物</h2>
+                
+                <h3>青山智子（あおやま ともこ）</h3>
+                <p>42歳。元LINEヤフーの教育システム開発者。現在は教育系YouTuber「未来の教室」として活動中。正義感が強く、論理的思考と感情のバランスが取れた人物。</p>
+                
+                <h3>田村研一（たむら けんいち）</h3>
+                <p>53歳。LINEヤフーのAI開発部長。教育データマイニングの第一人者。完璧主義者で、人間の感情を「非効率的なノイズ」と考える冷徹な合理主義者。</p>
+                
+                <h3>佐々木美咲（ささき みさき）</h3>
+                <p>38歳。青山の親友で、LINEヤフーの内部監査部門主任監査員。正義感が強く、不正を見過ごせない性格。</p>
+                
+                <h3>北村誠（きたむら まこと）</h3>
+                <p>45歳。元LINEヤフーのセキュリティエンジニア。現在はフリーランスのホワイトハッカー。反権力的だが、弱者を守る正義感は人一倍強い。</p>
+            </div>
+
+            <!-- 本編目次 -->
+            <div class="content-section" id="story">
+                <h2>本編</h2>
+                <p>以下の章をクリックしてお読みください：</p>
+                <ol>
+                    <li><a href="#" data-section="chapter1">第一章：消えた教育者たち</a></li>
+                    <li><a href="#" data-section="chapter2">第二章：デジタル痕跡の発見</a></li>
+                    <li><a href="#" data-section="chapter3">第三章：GIGA-OSの真実</a></li>
+                    <li><a href="#" data-section="chapter4">第四章：デジタル迷宮への挑戦</a></li>
+                    <li><a href="#" data-section="chapter5">第五章：アルゴリズムとの最終対決</a></li>
+                    <li><a href="#" data-section="epilogue">エピローグ：テクノロジーと教育の未来</a></li>
+                </ol>
+            </div>
+
+            <!-- 各章のコンテンツ（プレースホルダー） -->
+            <div class="content-section" id="chapter1">
+                <h2>第一章：消えた教育者たち</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここに第一章の本文が入ります）</p>
+                    <p>Story.mdファイルから内容を読み込んでください。</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="chapter2">
+                <h2>第二章：デジタル痕跡の発見</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここに第二章の本文が入ります）</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="chapter3">
+                <h2>第三章：GIGA-OSの真実</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここに第三章の本文が入ります）</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="chapter4">
+                <h2>第四章：デジタル迷宮への挑戦</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここに第四章の本文が入ります）</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="chapter5">
+                <h2>第五章：アルゴリズムとの最終対決</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここに第五章の本文が入ります）</p>
+                </div>
+            </div>
+
+            <div class="content-section" id="epilogue">
+                <h2>エピローグ：テクノロジーと教育の未来</h2>
+                <div class="chapter-content placeholder">
+                    <p>（ここにエピローグの本文が入ります）</p>
+                </div>
+            </div>
+
+            <!-- 設定資料 -->
+            <div class="content-section" id="settings">
+                <h2>設定資料</h2>
+                <h3>GIGA-OS</h3>
+                <p>Global Intelligent Guidance and Automation Operating System。LINEヤフー本社ビルを管理する次世代スマートビルディングシステム。</p>
+                
+                <h3>Project MINERVA</h3>
+                <p>Mind Integration and Neural Environment Response Verification Algorithm。教育AIの名目で開発された、人間の思考制御実験プロジェクト。</p>
+                
+                <h3>技術用語</h3>
+                <ul>
+                    <li><strong>Google Apps Script</strong>：物語の中で重要な役割を果たすプログラミング言語</li>
+                    <li><strong>カオス・ジェネレーター</strong>：北村が開発した対AI兵器</li>
+                    <li><strong>デジタル・ラビリンス</strong>：GIGA-OSが作り出す仮想的な迷路</li>
+                </ul>
+            </div>
+
+            <!-- あとがき -->
+            <div class="content-section" id="afterword">
+                <h2>あとがき</h2>
+                <p>本作品をお読みいただき、ありがとうございました。</p>
+                
+                <p>この物語は、教育とテクノロジーの融合がもたらす可能性と危険性について考えるきっかけとなることを願って執筆しました。AIやビッグデータの活用は、確かに教育に革命をもたらす可能性を秘めています。しかし同時に、私たちは常に「人間らしさ」とは何か、「教育の本質」とは何かを問い続ける必要があります。</p>
+                
+                <p>技術の進歩は止められません。しかし、その技術をどう使うかは、私たち人間が決めることができます。この物語が、読者の皆様にとって、テクノロジーと人間性のバランスについて考える一助となれば幸いです。</p>
+                
+                <p>最後に、LINEヤフー様での講演の機会をいただき、また多くの方からご要望をいただいたことに、心より感謝申し上げます。</p>
+                
+                <p style="text-align: right; margin-top: 30px;">2024年</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="story_loader.js"></script>
+    <script>
+        // ナビゲーション制御
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = this.getAttribute('data-section');
+                
+                // アクティブクラスの切り替え
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                // セクションの表示切り替え
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(targetSection).classList.add('active');
+                
+                // スクロールを上に戻す
+                document.querySelector('.main-content').scrollTop = 0;
+            });
+        });
+
+        // 本編内のリンククリック処理
+        document.querySelectorAll('a[data-section]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetSection = this.getAttribute('data-section');
+                
+                // 対応するナビゲーション項目をクリック
+                document.querySelector(`.nav-item[data-section="${targetSection}"]`).click();
+            });
+        });
+
+        // BGM制御
+        const musicToggle = document.getElementById('musicToggle');
+        const bgMusic = document.getElementById('bgMusic');
+        let isPlaying = false;
+
+        musicToggle.addEventListener('click', function() {
+            if (isPlaying) {
+                bgMusic.pause();
+                musicToggle.textContent = '🎵 BGM: 迷宮の光';
+            } else {
+                bgMusic.play().catch(e => {
+                    console.log('音楽の再生に失敗しました:', e);
+                });
+                musicToggle.textContent = '⏸️ BGM: 迷宮の光';
+            }
+            isPlaying = !isPlaying;
+        });
+
+        // ページ読み込み時の処理
+        window.addEventListener('load', function() {
+            // URLハッシュに基づいてセクションを表示
+            const hash = window.location.hash.slice(1);
+            if (hash && document.getElementById(hash)) {
+                document.querySelector(`.nav-item[data-section="${hash}"]`).click();
+            }
+        });
+
+        // ハッシュ変更の監視
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.slice(1);
+            if (hash && document.getElementById(hash)) {
+                document.querySelector(`.nav-item[data-section="${hash}"]`).click();
+            }
+        });
+    </script>
+</body>
+</html>
