@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム - 劇場公開版</title>
+    <title>デジタル・ラビリンス：LINEヤフーの隠されたアルゴリズム</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+JP:wght@300;400;700&family=Noto+Serif+JP:wght@300;400&display=swap');
         
         * {
             margin: 0;
@@ -15,68 +15,47 @@
 
         body {
             font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #000000;
-            color: #e0e0e0;
+            background: linear-gradient(180deg, #0a1628 0%, #1e3a5f 50%, #2d5a87 100%);
+            color: #f0f4f8;
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* 映画館のカーテン効果 */
+        /* 背景の光の粒子効果 */
         body::before {
             content: '';
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, 
-                rgba(0,0,0,1) 0%, 
-                rgba(0,0,0,0) 10%, 
-                rgba(0,0,0,0) 90%, 
-                rgba(0,0,0,1) 100%
-            );
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(120, 180, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 60% 70%, rgba(120, 180, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 50% 50%, rgba(255, 255, 255, 0.1), transparent);
+            background-size: 200px 200px;
+            animation: drift 20s infinite;
             pointer-events: none;
-            z-index: 10;
         }
 
-        /* フィルムグレイン効果 */
-        @keyframes grain {
+        @keyframes drift {
             0%, 100% { transform: translate(0, 0); }
-            10% { transform: translate(-5%, -10%); }
-            20% { transform: translate(-15%, 5%); }
-            30% { transform: translate(7%, -25%); }
-            40% { transform: translate(-5%, 25%); }
-            50% { transform: translate(-15%, 10%); }
-            60% { transform: translate(15%, 0%); }
-            70% { transform: translate(0%, 15%); }
-            80% { transform: translate(3%, 35%); }
-            90% { transform: translate(-10%, 10%); }
+            33% { transform: translate(-30px, -30px); }
+            66% { transform: translate(30px, -60px); }
         }
 
-        .film-grain {
-            position: fixed;
-            top: -100%;
-            left: -100%;
-            width: 300%;
-            height: 300%;
-            background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" /><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(%23noise)" opacity="0.02"/></svg>');
-            pointer-events: none;
-            animation: grain 8s steps(10) infinite;
-            z-index: 1;
-        }
-
-        /* ヘッダー - 映画タイトル風 */
+        /* ヘッダー - 優しく柔らかい印象 */
         header {
-            background: linear-gradient(180deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.8) 100%);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(180deg, rgba(10, 22, 40, 0.95) 0%, rgba(30, 58, 95, 0.8) 100%);
+            backdrop-filter: blur(20px);
             padding: 30px 0;
             position: fixed;
             width: 100%;
             top: 0;
             z-index: 1000;
-            border-bottom: 2px solid #ff0000;
-            box-shadow: 0 4px 30px rgba(255, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(120, 180, 255, 0.3);
+            box-shadow: 0 4px 30px rgba(120, 180, 255, 0.1);
         }
 
         .header-content {
@@ -89,35 +68,14 @@
         }
 
         h1 {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 2.5rem;
+            font-family: 'Klee One', cursive;
+            font-size: 2.2rem;
             color: #ffffff;
+            font-weight: 600;
             text-shadow: 
-                0 0 10px rgba(255, 0, 0, 0.8),
-                0 0 20px rgba(255, 0, 0, 0.6),
-                0 0 30px rgba(255, 0, 0, 0.4),
-                0 0 40px rgba(255, 0, 0, 0.2);
-            letter-spacing: 3px;
-            position: relative;
-        }
-
-        h1::after {
-            content: '劇場公開版';
-            position: absolute;
-            top: -15px;
-            right: -80px;
-            font-size: 0.8rem;
-            background: #ff0000;
-            padding: 2px 10px;
-            border-radius: 3px;
-            font-family: 'Noto Sans JP';
-            letter-spacing: 1px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+                0 2px 20px rgba(120, 180, 255, 0.5),
+                0 0 40px rgba(120, 180, 255, 0.3);
+            letter-spacing: 2px;
         }
 
         .audio-controls {
@@ -127,35 +85,19 @@
             color: #ffffff;
         }
 
-        /* フィクション注意書き - 映画の警告風 */
+        /* フィクション注意書き - 柔らかい警告 */
         .fiction-notice {
-            background: #000000;
-            color: #ff0000;
+            background: linear-gradient(135deg, rgba(120, 180, 255, 0.1) 0%, rgba(30, 58, 95, 0.2) 100%);
+            color: #a8d0f0;
             padding: 20px;
             margin-top: 120px;
             text-align: center;
-            font-weight: bold;
-            border: 2px solid #ff0000;
+            font-weight: 500;
+            border: 1px solid rgba(120, 180, 255, 0.3);
+            border-radius: 10px;
             position: relative;
             overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 2px;
             font-size: 14px;
-        }
-
-        .fiction-notice::before {
-            content: '⚠ WARNING ⚠';
-            position: absolute;
-            top: 5px;
-            left: 20px;
-            font-size: 12px;
-            color: #ff0000;
-            animation: blink 1s infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
         }
 
         /* メインコンテナ */
@@ -168,46 +110,46 @@
             min-height: calc(100vh - 250px);
         }
 
-        /* サイドバー（目次） - 映画のチャプター選択風 */
+        /* サイドバー（目次） - 優しい青のグラデーション */
         .sidebar {
             width: 320px;
-            background: linear-gradient(135deg, rgba(20, 20, 20, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.4) 0%, rgba(45, 90, 135, 0.3) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 30px 20px;
             position: sticky;
             top: 130px;
             height: fit-content;
             max-height: calc(100vh - 150px);
             overflow-y: auto;
-            border: 2px solid #ff0000;
+            border: 1px solid rgba(120, 180, 255, 0.2);
             box-shadow: 
-                0 0 30px rgba(255, 0, 0, 0.3),
-                inset 0 0 20px rgba(255, 0, 0, 0.1);
+                0 10px 40px rgba(10, 22, 40, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .sidebar h2 {
             color: #ffffff;
             margin-bottom: 25px;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             text-align: center;
             padding-bottom: 20px;
-            border-bottom: 2px solid #ff0000;
-            font-family: 'Bebas Neue', cursive;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+            border-bottom: 1px solid rgba(120, 180, 255, 0.3);
+            font-family: 'Klee One', cursive;
+            font-weight: 600;
+            letter-spacing: 2px;
         }
 
         .nav-item {
             display: block;
             padding: 15px 20px;
             margin: 8px 0;
-            color: #cccccc;
+            color: #d0e4f7;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 12px;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border: 1px solid transparent;
             position: relative;
             overflow: hidden;
@@ -217,83 +159,54 @@
             content: '';
             position: absolute;
             top: 0;
-            left: -100%;
-            width: 100%;
+            left: 0;
+            width: 0;
             height: 100%;
-            background: linear-gradient(90deg, transparent 0%, rgba(255, 0, 0, 0.4) 50%, transparent 100%);
-            transition: left 0.5s ease;
+            background: linear-gradient(90deg, transparent 0%, rgba(120, 180, 255, 0.1) 100%);
+            transition: width 0.3s ease;
         }
 
         .nav-item:hover {
-            border-color: #ff0000;
+            background: rgba(120, 180, 255, 0.1);
             color: #ffffff;
             transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
         }
 
         .nav-item:hover::before {
-            left: 100%;
+            width: 100%;
         }
 
         .nav-item.active {
-            background: rgba(255, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(120, 180, 255, 0.2) 0%, rgba(90, 150, 220, 0.15) 100%);
             color: #ffffff;
-            font-weight: bold;
-            border-color: #ff0000;
+            font-weight: 500;
+            border-color: rgba(120, 180, 255, 0.3);
             box-shadow: 
-                0 0 20px rgba(255, 0, 0, 0.5),
-                inset 0 0 10px rgba(255, 0, 0, 0.2);
+                0 0 20px rgba(120, 180, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
         .nav-item.chapter {
             padding-left: 40px;
             font-size: 0.95rem;
-            position: relative;
+            color: #b8d4ee;
         }
 
-        .nav-item.chapter::after {
-            content: 'CHAPTER';
-            position: absolute;
-            left: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 9px;
-            color: #666;
-            letter-spacing: 1px;
-        }
-
-        /* メインコンテンツ - 映画スクリーン風 */
+        /* メインコンテンツ - 読みやすく優しい雰囲気 */
         .main-content {
             flex: 1;
-            background: linear-gradient(135deg, rgba(15, 15, 15, 0.98) 0%, rgba(5, 5, 5, 0.98) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
             padding: 50px;
-            border: 2px solid #333;
+            border: 1px solid rgba(120, 180, 255, 0.2);
             box-shadow: 
-                0 0 50px rgba(0, 0, 0, 0.8),
-                inset 0 0 30px rgba(0, 0, 0, 0.5);
+                0 20px 60px rgba(10, 22, 40, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
             line-height: 1.9;
             font-size: 17px;
             position: relative;
             overflow: hidden;
-        }
-
-        /* スクリーンの光沢効果 */
-        .main-content::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, 
-                transparent 30%, 
-                rgba(255, 255, 255, 0.02) 50%, 
-                transparent 70%
-            );
-            transform: rotate(45deg);
-            pointer-events: none;
         }
 
         .content-section {
@@ -308,84 +221,59 @@
         @keyframes fadeIn {
             from {
                 opacity: 0;
-                transform: scale(0.95);
+                transform: translateY(10px);
             }
             to {
                 opacity: 1;
-                transform: scale(1);
+                transform: translateY(0);
             }
         }
 
         .content-section h2 {
             color: #ffffff;
             margin-bottom: 40px;
-            font-size: 2.5rem;
-            border-bottom: 3px solid #ff0000;
+            font-size: 2.2rem;
+            border-bottom: 2px solid rgba(120, 180, 255, 0.3);
             padding-bottom: 20px;
-            font-family: 'Bebas Neue', cursive;
-            letter-spacing: 2px;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            position: relative;
-        }
-
-        .content-section h2::before {
-            content: '▸';
-            color: #ff0000;
-            margin-right: 15px;
-            animation: pulse 2s infinite;
+            font-family: 'Klee One', cursive;
+            font-weight: 600;
+            letter-spacing: 1px;
         }
 
         .content-section h3 {
-            color: #ff6666;
+            color: #78b4ff;
             margin: 35px 0 20px;
-            font-size: 1.8rem;
-            text-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+            font-size: 1.6rem;
+            font-family: 'Klee One', cursive;
         }
 
-        /* 本編リンクのスタイル改善 */
+        /* 本編リンクのスタイル */
         .content-section a {
-            color: #ff6666;
+            color: #78b4ff;
             text-decoration: none;
             position: relative;
-            font-weight: 500;
+            font-weight: 400;
             transition: all 0.3s ease;
-            display: inline-block;
-            padding: 2px 5px;
+            border-bottom: 1px dotted rgba(120, 180, 255, 0.5);
         }
 
         .content-section a:hover {
-            color: #ffffff;
-            text-shadow: 0 0 10px rgba(255, 102, 102, 0.8);
-            transform: translateX(3px);
-        }
-
-        .content-section a::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #ff0000;
-            transition: width 0.3s ease;
-        }
-
-        .content-section a:hover::after {
-            width: 100%;
+            color: #a8d0f0;
+            border-bottom-color: #a8d0f0;
         }
 
         /* 章リストのスタイル */
         .content-section ol {
             margin: 20px 0;
-            padding-left: 30px;
+            padding-left: 0;
+            list-style: none;
         }
 
         .content-section ol li {
-            margin: 15px 0;
+            margin: 20px 0;
             font-size: 18px;
-            list-style: none;
+            padding-left: 40px;
             position: relative;
-            padding-left: 30px;
         }
 
         .content-section ol li::before {
@@ -395,16 +283,17 @@
             left: 0;
             top: 50%;
             transform: translateY(-50%);
-            background: #ff0000;
+            background: linear-gradient(135deg, #5a9fd4 0%, #78b4ff 100%);
             color: #ffffff;
-            width: 25px;
-            height: 25px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            font-weight: 600;
             font-size: 14px;
+            box-shadow: 0 2px 10px rgba(120, 180, 255, 0.3);
         }
 
         .content-section ol {
@@ -414,53 +303,40 @@
         .cover-image {
             max-width: 100%;
             height: auto;
-            border-radius: 5px;
+            border-radius: 15px;
             margin: 30px 0;
             box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.8),
-                0 0 100px rgba(255, 0, 0, 0.2);
-            border: 3px solid #333;
+                0 20px 60px rgba(10, 22, 40, 0.5),
+                0 0 100px rgba(120, 180, 255, 0.1);
+            border: 1px solid rgba(120, 180, 255, 0.2);
         }
 
-        /* スクロールバー - 映画館風 */
+        /* スクロールバー - 優しい青 */
         ::-webkit-scrollbar {
             width: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #111;
-            border: 1px solid #333;
+            background: rgba(30, 58, 95, 0.3);
+            border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #ff0000;
+            background: linear-gradient(135deg, #5a9fd4 0%, #78b4ff 100%);
             border-radius: 5px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: #ff3333;
+            background: linear-gradient(135deg, #78b4ff 0%, #a8d0f0 100%);
         }
 
-        /* 著者情報 - 映画のクレジット風 */
+        /* 著者情報 - 優しい背景 */
         .author-info {
-            background: linear-gradient(135deg, rgba(255, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 100%);
-            border-left: 5px solid #ff0000;
+            background: linear-gradient(135deg, rgba(120, 180, 255, 0.08) 0%, rgba(90, 150, 220, 0.05) 100%);
+            border-left: 4px solid rgba(120, 180, 255, 0.5);
             padding: 30px;
             margin: 40px 0;
-            border-radius: 0 10px 10px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .author-info::before {
-            content: 'PRODUCTION NOTE';
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-size: 12px;
-            color: #ff0000;
-            letter-spacing: 2px;
-            font-weight: bold;
+            border-radius: 0 15px 15px 0;
         }
 
         /* レスポンシブ */
@@ -482,36 +358,30 @@
             h1 {
                 font-size: 1.8rem;
             }
-
-            h1::after {
-                display: none;
-            }
         }
 
-        /* 音楽プレイヤーボタン - 映画館風 */
+        /* 音楽プレイヤーボタン - 優しい青 */
         #musicToggle {
-            background: rgba(255, 0, 0, 0.2);
-            border: 2px solid #ff0000;
+            background: linear-gradient(135deg, rgba(120, 180, 255, 0.2) 0%, rgba(90, 150, 220, 0.15) 100%);
+            border: 1px solid rgba(120, 180, 255, 0.5);
             color: #ffffff;
             padding: 10px 20px;
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 14px;
-            font-weight: 600;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-weight: 500;
         }
 
         #musicToggle:hover {
-            background: rgba(255, 0, 0, 0.4);
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            background: linear-gradient(135deg, rgba(120, 180, 255, 0.3) 0%, rgba(90, 150, 220, 0.25) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(120, 180, 255, 0.3);
         }
 
         /* プレースホルダーテキストスタイル */
         .placeholder {
-            color: #666;
+            color: #8ca9c9;
             font-style: italic;
         }
 
@@ -521,148 +391,153 @@
             font-family: 'Noto Serif JP', serif;
             font-size: 17px;
             line-height: 2.1;
-            color: #e8e8e8;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            color: #e8f2ff;
         }
 
         .chapter-divider {
             text-align: center;
             margin: 50px 0;
-            color: #ff0000;
-            font-size: 30px;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+            color: #78b4ff;
+            font-size: 24px;
+            opacity: 0.5;
         }
 
-        /* 音楽プレイヤーのオーバーレイ */
+        /* 音楽プレイヤーのオーバーレイ - 優しく切ない雰囲気 */
         .music-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.95);
+            background: linear-gradient(180deg, rgba(10, 22, 40, 0.98) 0%, rgba(30, 58, 95, 0.95) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2000;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
         }
 
         .music-modal {
-            background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
-            border: 3px solid #ff0000;
-            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+            border: 1px solid rgba(120, 180, 255, 0.3);
+            border-radius: 30px;
             padding: 60px 80px;
             max-width: 600px;
             text-align: center;
             box-shadow: 
-                0 0 100px rgba(255, 0, 0, 0.8),
-                inset 0 0 50px rgba(255, 0, 0, 0.2);
-            animation: modalPulse 2s ease-in-out infinite;
+                0 30px 100px rgba(10, 22, 40, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes modalPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+        /* 背景の光の演出 */
+        .music-modal::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(120, 180, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         .music-modal h2 {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 3rem;
+            font-family: 'Klee One', cursive;
+            font-size: 2.5rem;
             color: #ffffff;
             margin-bottom: 20px;
-            text-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
-            letter-spacing: 4px;
+            text-shadow: 0 2px 20px rgba(120, 180, 255, 0.5);
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
         }
 
         .new-release-badge {
             display: inline-block;
-            background: #ff0000;
+            background: linear-gradient(135deg, #78b4ff 0%, #5a9fd4 100%);
             color: #ffffff;
-            padding: 10px 30px;
-            border-radius: 30px;
-            font-weight: bold;
+            padding: 8px 25px;
+            border-radius: 20px;
+            font-weight: 600;
             margin-bottom: 30px;
-            animation: blink 1s infinite;
-            text-transform: uppercase;
+            font-size: 14px;
             letter-spacing: 2px;
-            font-size: 18px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 4px 15px rgba(120, 180, 255, 0.4);
         }
 
         .music-modal p {
-            color: #e0e0e0;
-            font-size: 18px;
+            color: #d0e4f7;
+            font-size: 16px;
             margin-bottom: 40px;
             line-height: 1.8;
+            position: relative;
+            z-index: 1;
         }
 
         .play-button {
-            background: linear-gradient(135deg, #ff0000 0%, #cc0000 100%);
+            background: linear-gradient(135deg, #78b4ff 0%, #5a9fd4 100%);
             color: #ffffff;
             border: none;
-            padding: 20px 60px;
-            font-size: 24px;
-            font-weight: bold;
-            border-radius: 50px;
+            padding: 18px 50px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 30px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 3px;
+            letter-spacing: 1px;
             box-shadow: 
-                0 10px 30px rgba(255, 0, 0, 0.5),
-                inset 0 2px 5px rgba(255, 255, 255, 0.3);
+                0 10px 30px rgba(120, 180, 255, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 1;
         }
 
         .play-button:hover {
-            transform: translateY(-3px) scale(1.05);
+            transform: translateY(-3px);
             box-shadow: 
-                0 15px 40px rgba(255, 0, 0, 0.7),
-                inset 0 2px 5px rgba(255, 255, 255, 0.4);
-        }
-
-        .play-button:active {
-            transform: translateY(-1px) scale(1.02);
+                0 15px 40px rgba(120, 180, 255, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.4);
         }
 
         .skip-link {
             display: block;
-            margin-top: 30px;
-            color: #666;
+            margin-top: 25px;
+            color: #8ca9c9;
             text-decoration: none;
             font-size: 14px;
             transition: color 0.3s ease;
+            position: relative;
+            z-index: 1;
         }
 
         .skip-link:hover {
-            color: #999;
+            color: #a8d0f0;
         }
 
-        /* 音楽再生中のインジケーター */
+        /* 音楽再生中のインジケーター - 優しい演出 */
         .music-indicator {
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #ff0000;
-            border-radius: 50px;
-            padding: 15px 30px;
+            background: linear-gradient(135deg, rgba(30, 58, 95, 0.9) 0%, rgba(45, 90, 135, 0.8) 100%);
+            border: 1px solid rgba(120, 180, 255, 0.3);
+            border-radius: 30px;
+            padding: 12px 25px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
             z-index: 1100;
-            box-shadow: 0 0 30px rgba(255, 0, 0, 0.5);
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            box-shadow: 0 5px 20px rgba(10, 22, 40, 0.5);
+            backdrop-filter: blur(10px);
         }
 
         .music-indicator.hidden {
@@ -671,50 +546,48 @@
 
         .visualizer {
             display: flex;
-            gap: 3px;
+            gap: 2px;
             align-items: flex-end;
-            height: 20px;
+            height: 16px;
         }
 
         .bar {
-            width: 4px;
-            background: #ff0000;
-            animation: pulse 1s ease-in-out infinite;
+            width: 3px;
+            background: linear-gradient(to top, #5a9fd4 0%, #a8d0f0 100%);
+            border-radius: 2px;
+            animation: wave 1.2s ease-in-out infinite;
         }
 
-        .bar:nth-child(1) { height: 10px; animation-delay: 0s; }
-        .bar:nth-child(2) { height: 20px; animation-delay: 0.1s; }
-        .bar:nth-child(3) { height: 15px; animation-delay: 0.2s; }
-        .bar:nth-child(4) { height: 18px; animation-delay: 0.3s; }
-        .bar:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+        .bar:nth-child(1) { height: 8px; animation-delay: 0s; }
+        .bar:nth-child(2) { height: 16px; animation-delay: 0.1s; }
+        .bar:nth-child(3) { height: 12px; animation-delay: 0.2s; }
+        .bar:nth-child(4) { height: 14px; animation-delay: 0.3s; }
+        .bar:nth-child(5) { height: 10px; animation-delay: 0.4s; }
 
-        @keyframes pulse {
-            0%, 100% { transform: scaleY(0.5); }
-            50% { transform: scaleY(1); }
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.6; }
+            50% { transform: scaleY(1); opacity: 1; }
         }
 
         .music-indicator span {
             color: #ffffff;
-            font-weight: 600;
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-weight: 500;
+            font-size: 13px;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 <body>
-    <div class="film-grain"></div>
-    
     <!-- 音楽再生プロンプトのオーバーレイ -->
     <div id="musicOverlay" class="music-overlay">
         <div class="music-modal">
             <h2>主題歌「迷宮の光」</h2>
             <div class="new-release-badge">NEW RELEASE</div>
             <p>
-                劇場公開版の世界観を彩る主題歌<br>
-                「迷宮の光」をぜひお聴きください<br>
+                物語の世界観を彩る、切なくも希望に満ちた主題歌<br>
+                「迷宮の光」をお聴きください<br>
                 <br>
-                🎵 最高の臨場感でお楽しみいただくために<br>
-                音楽の再生をおすすめします
+                🎵 音楽と共に、物語の世界へ
             </p>
             <button class="play-button" onclick="startMusic()">
                 ▶ 音楽を再生して始める
@@ -748,7 +621,7 @@
     </header>
 
     <div class="fiction-notice">
-        ⚠️ この作品は完全なフィクションです。LINEヤフー様での講演時にサンプルとして制作したもので、実在の人物・団体・出来事とは一切関係ありません。
+        この作品は完全なフィクションです。LINEヤフー様での講演時にサンプルとして制作したもので、実在の人物・団体・出来事とは一切関係ありません。
         続編のご要望を多数いただいたため、完全版として公開いたしました。
     </div>
 
@@ -972,8 +845,6 @@
         const musicToggle = document.getElementById('musicToggle');
         const bgMusic = document.getElementById('bgMusic');
         let isPlaying = false;
-
-        // 自動再生関数（削除 - オーバーレイで対応）
 
         musicToggle.addEventListener('click', function() {
             const indicator = document.getElementById('musicIndicator');
